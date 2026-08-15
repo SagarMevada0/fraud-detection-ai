@@ -40,6 +40,32 @@ body {
 .header h1 { font-size: 26px; font-weight: 700; }
 .subtitle { color: #cbd5e1; font-size: 14px; margin-top: 2px; }
 
+/* Navigation tabs */
+.nav-tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+.nav-tab {
+  padding: 10px 20px;
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+  color: #cbd5e1;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  transition: background 0.15s, color 0.15s;
+}
+.nav-tab:hover { background: rgba(255, 255, 255, 0.16); color: #fff; }
+.nav-tab.active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+  box-shadow: 0 4px 14px rgba(37, 99, 235, 0.35);
+}
+
 /* Cards */
 .card {
   background: var(--card);
@@ -196,6 +222,67 @@ body {
 
 .threshold-note { font-size: 13px; color: var(--muted); margin-top: 14px; }
 .ground-truth { font-size: 13px; color: var(--muted); margin-top: 6px; font-style: italic; }
+
+/* Results page: metric cards */
+.metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 14px;
+  margin-top: 6px;
+}
+.metric-card {
+  background: #f8fafc;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 16px 14px;
+  text-align: center;
+}
+.metric-value {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--accent-dark);
+}
+.metric-label { font-size: 14px; font-weight: 600; margin-top: 4px; }
+.metric-hint { font-size: 11px; color: var(--muted); margin-top: 4px; }
+
+/* Results page: confusion matrix table */
+.cm-table {
+  border-collapse: collapse;
+  width: 100%;
+  max-width: 560px;
+  font-size: 14px;
+}
+.cm-table th, .cm-table td {
+  border: 1px solid var(--border);
+  padding: 10px 14px;
+  text-align: center;
+}
+.cm-table thead th { background: #f1f5f9; }
+.cm-table tbody th { background: #f8fafc; text-align: left; }
+.cm-table td { font-weight: 700; font-size: 16px; }
+.cm-table td.cm-good { background: #dcfce7; color: var(--safe); }
+.cm-table td.cm-bad { background: #fee2e2; color: var(--danger); }
+
+/* Results page: plots */
+.plots-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 18px;
+}
+.plot {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 10px;
+  background: #f8fafc;
+}
+.plot img { width: 100%; height: auto; border-radius: 6px; display: block; }
+.plot figcaption {
+  text-align: center;
+  font-size: 13px;
+  font-weight: 600;
+  margin-top: 8px;
+  color: var(--text);
+}
 
 /* Footer */
 .footer {

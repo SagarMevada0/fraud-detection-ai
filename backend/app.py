@@ -18,6 +18,7 @@
 #   uvicorn app:app --reload --port 8000
 # ---------------------------------------------------------------------------
 
+import json
 import os
 import random
 
@@ -35,6 +36,7 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 MODEL_PATH = os.path.join(BASE_DIR, "fraud_detection_model.joblib")
 METADATA_PATH = os.path.join(BASE_DIR, "fraud_detection_metadata.joblib")
 DATA_PATH = os.path.join(BASE_DIR, "creditcard.csv")
+RESULTS_DIR = os.path.join(BASE_DIR, "results")
 FRONTEND_DIR = os.path.join(os.path.dirname(BASE_DIR), "frontend")
 
 app = FastAPI(
@@ -216,11 +218,50 @@ def predict(transaction: Transaction):
     return result
 
 
+# Plot files served under /results-img/ (see mount below).
+RESULT_IMAGES = [
+    {"file": "confusion_matrix.png", "title": "Confusion Matrix"},
+    {"file": "roc_curve.png", "title": "ROC Curve"},
+    {"file": "pr_curve.png", "title": "Precision-Recall Curve"},
+    {"file": "threshold_analysis.png", "title": "Precision / Recall / F1 vs Threshold"},
+    {"file": "feature_importance.png", "title": "Top Feature Importance"},
+]
+
+
+@app.get("/results")
+def results():
+    """
+    Final model evaluation results: test-set metrics, confusion matrix
+    counts, and the list of evaluation plots (generated once by
+    generate_results.py, which mirrors the training script's evaluation
+    sections without retraining).
+    """
+    metrics_path = os.path.join(RESULTS_DIR, "metrics.json")
+    if not os.path.exists(metrics_path):
+        raise HTTPException(
+            status_code=500,
+            detail="Results not generated yet. Run: python generate_results.py",
+        )
+
+    with open(metrics_path) as f:
+        payload = json.load(f)
+
+    payload["images"] = [
+        {"title": img["title"], "url": f"/results-img/{img['file']}"}
+        for img in RESULT_IMAGES
+        if os.path.exists(os.path.join(RESULTS_DIR, img["file"]))
+    ]
+    return payload
+
+
 # ---------------------------------------------------------------------------
 # Serve the frontend from this same server (same origin, so the browser
 # never needs a cross-origin request). API routes above take priority;
 # any other path falls through to the static files in frontend/.
 # Open http://127.0.0.1:8000 to use the app with a single server.
 # ---------------------------------------------------------------------------
+if os.path.isdir(RESULTS_DIR):
+    app.mount("/results-img", StaticFiles(directory=RESULTS_DIR), name="results")
+
 if os.path.isdir(FRONTEND_DIR):
     app.mount("/", StaticFiles(directory=FRONTEND_DIR, html=True), name="frontend")

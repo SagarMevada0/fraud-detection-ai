@@ -6,10 +6,14 @@ small web application:
 
 - **Backend** — a FastAPI REST API that wraps the trained model
   (`/predict` and `/sample` endpoints).
-- **Frontend** — a clean HTML/CSS/JavaScript page where you can enter a
-  transaction (or load a real sample) and instantly see whether it is
-  flagged as **FRAUD** or **LEGITIMATE**, with the fraud probability shown
-  on a gauge.
+- **Frontend** — a clean HTML/CSS/JavaScript app with two pages:
+  - **Check Transaction** — enter a transaction (or load a real sample) and
+    instantly see whether it is flagged as **FRAUD** or **LEGITIMATE**, with
+    the fraud probability shown on a gauge.
+  - **Results / Model Evaluation** — the final model's test-set metrics
+    (Accuracy, Precision, Recall, F1, ROC-AUC, PR-AUC) as cards, the
+    confusion matrix, and the ROC / Precision-Recall / threshold-analysis /
+    feature-importance plots generated from the trained model.
 
 Everything runs locally with free, open-source tools only, and can also be
 deployed for free to Render as a single web service (see
@@ -22,13 +26,17 @@ credit-fraud-project/
 ├── backend/
 │   ├── app.py                                        # FastAPI REST API
 │   ├── UDA7_credit_card_fraud_detection_complete.py  # ML training pipeline (unchanged)
+│   ├── generate_results.py                           # regenerates evaluation plots/metrics (no retraining)
+│   ├── results/                                      # metrics.json + evaluation plot PNGs
 │   ├── fraud_detection_model.joblib                  # trained model (generated)
 │   ├── fraud_detection_metadata.joblib               # features + threshold (generated)
 │   └── creditcard.csv                                # Kaggle dataset
 ├── frontend/
-│   ├── index.html                                    # web page
+│   ├── index.html                                    # Check Transaction page
+│   ├── results.html                                  # Results / Model Evaluation page
 │   ├── style.css                                     # styling
-│   └── script.js                                     # calls the backend API
+│   ├── script.js                                     # transaction checker logic
+│   └── results.js                                    # results page logic
 ├── requirements.txt
 ├── render.yaml                                       # one-click Render deployment
 ├── .gitignore
@@ -123,6 +131,7 @@ port 8000 and check the API address shown in the page footer.
 | GET    | `/`        | The web frontend (served by the backend)                                 |
 | GET    | `/health`  | Health check: model name, threshold, endpoint list                       |
 | GET    | `/sample`  | One random transaction from the dataset (demo only, never the full file) |
+| GET    | `/results` | Final test-set metrics, confusion matrix counts and evaluation plot URLs |
 | POST   | `/predict` | Body: JSON with `Time`, `Amount`, `V1`–`V28`. Returns probability, decision, alert |
 
 Example `/predict` response:
@@ -135,6 +144,21 @@ Example `/predict` response:
   "alert": "FRAUD ALERT: Transaction requires investigation."
 }
 ```
+
+## Regenerating the evaluation results
+
+The Results page is powered by `backend/results/` (metrics.json + PNG plots),
+which is committed to the repo. To regenerate it from the saved model without
+retraining (e.g. after retraining the model):
+
+```bash
+cd backend
+python generate_results.py
+```
+
+It rebuilds the exact same train/validation/test split as the training script
+(same cleaning and random seed) and recreates the confusion matrix, ROC curve,
+PR curve, threshold analysis and feature importance plots.
 
 ## Deploying to Render (free)
 
