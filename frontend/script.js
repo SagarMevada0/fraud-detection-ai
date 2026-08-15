@@ -6,8 +6,19 @@
 //   POST /predict  -> returns fraud probability, decision and alert
 // ---------------------------------------------------------------
 
-// Backend base URL. Change this if you run the API on another port/host.
-const API_URL = "http://127.0.0.1:8000";
+// Backend base URL, chosen automatically:
+//  - Page served by the FastAPI backend itself (locally on port 8000 or on a
+//    deployed host like Render): use the SAME origin -> no CORS involved.
+//  - Page served separately on port 3000 (python -m http.server) or opened
+//    as a local file: talk to the API on port 8000 of the same hostname.
+const API_URL = (() => {
+  const { protocol, hostname, port } = window.location;
+  if (protocol === "file:") return "http://127.0.0.1:8000";
+  if (port && port !== "8000" && ["localhost", "127.0.0.1"].includes(hostname)) {
+    return `${protocol}//${hostname}:8000`;
+  }
+  return ""; // same origin as the page
+})();
 
 const V_FEATURES = Array.from({ length: 28 }, (_, i) => `V${i + 1}`);
 const ALL_FEATURES = ["Time", "Amount", ...V_FEATURES];
@@ -28,7 +39,8 @@ V_FEATURES.forEach((name) => {
 });
 
 // Show which API we are talking to in the footer.
-document.getElementById("apiUrl").textContent = API_URL;
+document.getElementById("apiUrl").textContent =
+  API_URL || `${window.location.origin} (same origin)`;
 
 const statusEl = document.getElementById("status");
 const loadSampleBtn = document.getElementById("loadSampleBtn");

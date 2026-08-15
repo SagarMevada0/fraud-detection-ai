@@ -11,7 +11,9 @@ small web application:
   flagged as **FRAUD** or **LEGITIMATE**, with the fraud probability shown
   on a gauge.
 
-Everything runs locally with free, open-source tools only.
+Everything runs locally with free, open-source tools only, and can also be
+deployed for free to Render as a single web service (see
+[Deploying to Render](#deploying-to-render-free) below).
 
 ## Project structure
 
@@ -28,6 +30,7 @@ credit-fraud-project/
 │   ├── style.css                                     # styling
 │   └── script.js                                     # calls the backend API
 ├── requirements.txt
+├── render.yaml                                       # one-click Render deployment
 ├── .gitignore
 └── README.md
 ```
@@ -61,7 +64,10 @@ This creates `fraud_detection_model.joblib` and
 `fraud_detection_metadata.joblib` (plus evaluation CSVs and plots for the
 dissertation Results chapter).
 
-## 3. Run the backend
+## 3. Run the app (one terminal is enough)
+
+The backend now also serves the frontend, so a single command runs the whole
+app with **no cross-origin (CORS) requests at all**:
 
 ```bash
 cd backend
@@ -72,16 +78,17 @@ You should see `Uvicorn running on http://127.0.0.1:8000`.
 
 Quick checks:
 
-- Open <http://127.0.0.1:8000> — you should see a JSON welcome message with
-  the model name and threshold.
+- Open <http://127.0.0.1:8000> — the fraud detection web page loads.
+- Open <http://127.0.0.1:8000/health> — JSON health check with the model
+  name and threshold.
 - Open <http://127.0.0.1:8000/docs> — interactive API documentation where
   you can try `/sample` and `/predict` directly.
 
-Keep this terminal open; the API must stay running for the frontend to work.
+## 4. (Optional) Run the frontend on its own server
 
-## 4. Run the frontend
-
-In a **second terminal**, from the project root:
+Serving `frontend/` separately still works — the page automatically detects
+that it is on another port and calls the API at port 8000 (CORS is enabled
+for all origins). In a **second terminal**, from the project root:
 
 ```bash
 cd frontend
@@ -90,12 +97,10 @@ python3 -m http.server 3000
 
 Then open <http://127.0.0.1:3000> in your browser.
 
-(Simply double-clicking `index.html` also works in most browsers, but using
-the small HTTP server above is the most reliable option.)
-
 ## 5. Confirm everything is connected
 
-1. With both terminals running, open <http://127.0.0.1:3000>.
+1. Open the app (<http://127.0.0.1:8000>, or <http://127.0.0.1:3000> if you
+   used step 4).
 2. Click **"Load sample transaction"** — all fields (Amount, Time and the
    V1–V28 advanced fields) should fill automatically with a real transaction
    from the dataset. This proves the frontend can reach the backend.
@@ -106,14 +111,17 @@ the small HTTP server above is the most reliable option.)
    ground-truth label so you can compare the model's decision against it.
 
 **Troubleshooting:** if the page shows *"Could not reach the backend"*,
-make sure the backend terminal is still running on port 8000, and that
-`API_URL` at the top of `frontend/script.js` matches its address.
+use <http://127.0.0.1:8000> directly (single-server mode) — the frontend and
+API are then the same origin, so no cross-origin request is ever made. If
+you insist on port 3000, make sure the backend terminal is still running on
+port 8000 and check the API address shown in the page footer.
 
 ## API reference
 
 | Method | Endpoint   | Description                                                              |
 | ------ | ---------- | ------------------------------------------------------------------------ |
-| GET    | `/`        | Health check: model name, threshold, endpoint list                       |
+| GET    | `/`        | The web frontend (served by the backend)                                 |
+| GET    | `/health`  | Health check: model name, threshold, endpoint list                       |
 | GET    | `/sample`  | One random transaction from the dataset (demo only, never the full file) |
 | POST   | `/predict` | Body: JSON with `Time`, `Amount`, `V1`–`V28`. Returns probability, decision, alert |
 
@@ -127,6 +135,22 @@ Example `/predict` response:
   "alert": "FRAUD ALERT: Transaction requires investigation."
 }
 ```
+
+## Deploying to Render (free)
+
+The repository includes a `render.yaml` blueprint that deploys the backend
+and frontend together as **one free web service** (the FastAPI app serves
+the frontend, so no separate static site or CORS setup is needed):
+
+1. Create a free account at <https://render.com> (sign in with GitHub).
+2. Go to <https://dashboard.render.com/blueprints> → **New Blueprint
+   Instance**, select this repository, and click **Deploy**.
+3. When the build finishes, open the service URL
+   (e.g. `https://fraud-detection-ai.onrender.com`) — the full app works
+   there on desktop and mobile.
+
+Note: on the free plan the service sleeps after ~15 minutes of inactivity,
+so the first request after a while can take up to a minute while it wakes up.
 
 ## Notes
 

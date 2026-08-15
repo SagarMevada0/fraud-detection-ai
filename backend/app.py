@@ -25,6 +25,7 @@ import joblib
 import pandas as pd
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
 # ---------------------------------------------------------------------------
@@ -34,6 +35,7 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 MODEL_PATH = os.path.join(BASE_DIR, "fraud_detection_model.joblib")
 METADATA_PATH = os.path.join(BASE_DIR, "fraud_detection_metadata.joblib")
 DATA_PATH = os.path.join(BASE_DIR, "creditcard.csv")
+FRONTEND_DIR = os.path.join(os.path.dirname(BASE_DIR), "frontend")
 
 app = FastAPI(
     title="UDA7 Credit Card Fraud Detection API",
@@ -42,7 +44,8 @@ app = FastAPI(
 )
 
 # Allow the frontend (served from a different port / opened as a local file)
-# to call this API from the browser.
+# to call this API from the browser. allow_origins=["*"] permits any origin,
+# including http://127.0.0.1:3000 and http://localhost:3000.
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -158,8 +161,8 @@ class Transaction(BaseModel):
     V28: float
 
 
-@app.get("/")
-def root():
+@app.get("/health")
+def health():
     """Simple health check so you can confirm the backend is running."""
     return {
         "message": "UDA7 Credit Card Fraud Detection API is running.",
@@ -211,3 +214,13 @@ def predict(transaction: Transaction):
         raise HTTPException(status_code=400, detail=str(exc))
 
     return result
+
+
+# ---------------------------------------------------------------------------
+# Serve the frontend from this same server (same origin, so the browser
+# never needs a cross-origin request). API routes above take priority;
+# any other path falls through to the static files in frontend/.
+# Open http://127.0.0.1:8000 to use the app with a single server.
+# ---------------------------------------------------------------------------
+if os.path.isdir(FRONTEND_DIR):
+    app.mount("/", StaticFiles(directory=FRONTEND_DIR, html=True), name="frontend")
