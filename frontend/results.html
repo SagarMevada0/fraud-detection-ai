@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>UDA7 &middot; Model Evaluation Results</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <main class="container">
+    <!-- Header -->
+    <header class="header">
+      <div class="logo">🛡️</div>
+      <div>
+        <h1>Credit Card Fraud Detection</h1>
+        <p class="subtitle">UDA7 &mdash; AI-Powered Fraud Detection &amp; Alert System</p>
+      </div>
+    </header>
+
+    <!-- Navigation tabs -->
+    <nav class="nav-tabs">
+      <a href="index.html" class="nav-tab">🔍 Check Transaction</a>
+      <a href="results.html" class="nav-tab active">📊 Results / Model Evaluation</a>
+    </nav>
+
+    <!-- Metrics card -->
+    <section class="card">
+      <h2>Final Model Performance (held-out test set)</h2>
+      <p class="hint" id="modelInfo">Loading results&hellip;</p>
+      <div class="metrics-grid" id="metricsGrid"></div>
+      <p id="resultsStatus" class="status"></p>
+    </section>
+
+    <!-- Confusion matrix table card -->
+    <section class="card hidden" id="cmCard">
+      <h2>Confusion Matrix (counts)</h2>
+      <table class="cm-table">
+        <thead>
+          <tr>
+            <th></th>
+            <th>Predicted: Legitimate</th>
+            <th>Predicted: Fraud</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th>Actual: Legitimate</th>
+            <td id="cmTN" class="cm-good">&mdash;</td>
+            <td id="cmFP" class="cm-bad">&mdash;</td>
+          </tr>
+          <tr>
+            <th>Actual: Fraud</th>
+            <td id="cmFN" class="cm-bad">&mdash;</td>
+            <td id="cmTP" class="cm-good">&mdash;</td>
+          </tr>
+        </tbody>
+      </table>
+      <p class="threshold-note" id="cmNote"></p>
+    </section>
+
+    <!-- Evaluation plots -->
+    <section class="card hidden" id="plotsCard">
+      <h2>Evaluation Plots</h2>
+      <p class="hint">
+        Generated with matplotlib from the trained model's predictions on the
+        held-out test set (threshold analysis uses the validation set), exactly
+        as in the training pipeline.
+      </p>
+      <div class="plots-grid" id="plotsGrid"></div>
+    </section>
+
+    <footer class="footer">
+      MSc AI &amp; Data Science &middot; Kaggle Credit Card Fraud Dataset &middot;
+      Model served by FastAPI at <code id="apiUrl"></code>
+    </footer>
+  </main>
+
+  <script src="results.js"></script>
+</body>
+</html>
