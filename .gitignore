@@ -1,0 +1,24 @@
+# Python
+__pycache__/
+*.pyc
+venv/
+.venv/
+env/
+
+# NOTE: creditcard.csv and the trained .joblib model files ARE committed
+# to this repository (both are under GitHub's 100 MB file limit) so the
+# project works immediately after cloning.
+
+# Large generated outputs from the training script (recreate by re-running it)
+backend/fraud_alert_test_report.csv
+backend/training_log.txt
+
+# Local test screenshots / logs
+ui_test*.png
+backend/uvicorn.log
+
+# OS / editor files
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/

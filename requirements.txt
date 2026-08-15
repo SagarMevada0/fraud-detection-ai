@@ -1,0 +1,15 @@
+# UDA7 Credit Card Fraud Detection - Python dependencies
+# Install with: pip install -r requirements.txt
+
+# Core data / ML stack (used by the training script)
+numpy
+pandas
+scikit-learn
+imbalanced-learn
+xgboost
+joblib
+matplotlib
+
+# Backend API
+fastapi
+uvicorn[standard]

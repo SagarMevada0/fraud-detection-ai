@@ -1,0 +1,207 @@
+/* ---------------------------------------------------------------
+   UDA7 Credit Card Fraud Detection - Frontend styles
+   Clean, modern card-based layout. No frameworks, plain CSS.
+   --------------------------------------------------------------- */
+
+:root {
+  --bg: #0f172a;            /* page background (dark navy) */
+  --card: #ffffff;          /* card background */
+  --text: #1e293b;          /* main text */
+  --muted: #64748b;         /* secondary text */
+  --accent: #2563eb;        /* primary blue */
+  --accent-dark: #1d4ed8;
+  --danger: #dc2626;        /* fraud red */
+  --safe: #16a34a;          /* legitimate green */
+  --border: #e2e8f0;
+  --radius: 14px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: "Segoe UI", system-ui, -apple-system, Arial, sans-serif;
+  background: linear-gradient(160deg, #0f172a 0%, #1e3a5f 100%);
+  min-height: 100vh;
+  color: var(--text);
+  padding: 32px 16px;
+}
+
+.container { max-width: 860px; margin: 0 auto; }
+
+/* Header */
+.header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  color: #fff;
+  margin-bottom: 24px;
+}
+.logo { font-size: 42px; }
+.header h1 { font-size: 26px; font-weight: 700; }
+.subtitle { color: #cbd5e1; font-size: 14px; margin-top: 2px; }
+
+/* Cards */
+.card {
+  background: var(--card);
+  border-radius: var(--radius);
+  padding: 24px 28px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+  margin-bottom: 24px;
+}
+.card h2 { font-size: 18px; margin-bottom: 18px; }
+
+/* Primary fields (Amount, Time) */
+.primary-fields {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+}
+@media (max-width: 600px) { .primary-fields { grid-template-columns: 1fr; } }
+
+.field label {
+  display: block;
+  font-weight: 600;
+  font-size: 14px;
+  margin-bottom: 6px;
+}
+.field input {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-size: 15px;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.field input:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+}
+.field small { color: var(--muted); font-size: 12px; }
+
+/* Advanced (V1-V28) section */
+.advanced {
+  margin-top: 20px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 12px 16px;
+  background: #f8fafc;
+}
+.advanced summary {
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--accent-dark);
+}
+.advanced .hint { color: var(--muted); font-size: 13px; margin: 10px 0; }
+
+.v-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 10px;
+}
+.v-grid .field label { font-size: 12px; margin-bottom: 3px; }
+.v-grid .field input { padding: 7px 9px; font-size: 13px; }
+
+/* Buttons */
+.actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 22px;
+  flex-wrap: wrap;
+}
+.btn {
+  padding: 11px 22px;
+  border: none;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.1s, box-shadow 0.15s, background 0.15s;
+}
+.btn:active { transform: scale(0.98); }
+.btn.primary {
+  background: var(--accent);
+  color: #fff;
+  box-shadow: 0 4px 14px rgba(37, 99, 235, 0.35);
+}
+.btn.primary:hover { background: var(--accent-dark); }
+.btn.secondary {
+  background: #eef2ff;
+  color: var(--accent-dark);
+  border: 1px solid #c7d2fe;
+}
+.btn.secondary:hover { background: #e0e7ff; }
+.btn:disabled { opacity: 0.6; cursor: wait; }
+
+.status { margin-top: 12px; font-size: 13px; color: var(--muted); min-height: 18px; }
+.status.error { color: var(--danger); font-weight: 600; }
+
+/* Result card */
+.hidden { display: none; }
+
+.badge {
+  display: inline-block;
+  padding: 10px 24px;
+  border-radius: 999px;
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  margin-bottom: 10px;
+}
+.badge.fraud { background: #fee2e2; color: var(--danger); border: 2px solid var(--danger); }
+.badge.legit { background: #dcfce7; color: var(--safe); border: 2px solid var(--safe); }
+
+.alert-message { font-size: 15px; margin-bottom: 20px; }
+
+/* Probability gauge */
+.gauge { margin-top: 6px; }
+.gauge-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+.gauge-track {
+  position: relative;
+  height: 18px;
+  background: #f1f5f9;
+  border-radius: 999px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+}
+.gauge-fill {
+  height: 100%;
+  width: 0%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #22c55e, #eab308, #ef4444);
+  transition: width 0.6s ease;
+}
+.threshold-marker {
+  position: absolute;
+  top: -3px;
+  bottom: -3px;
+  width: 3px;
+  background: #334155;
+  border-radius: 2px;
+}
+.gauge-scale {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  color: var(--muted);
+  margin-top: 4px;
+}
+
+.threshold-note { font-size: 13px; color: var(--muted); margin-top: 14px; }
+.ground-truth { font-size: 13px; color: var(--muted); margin-top: 6px; font-style: italic; }
+
+/* Footer */
+.footer {
+  text-align: center;
+  color: #94a3b8;
+  font-size: 13px;
+  margin-top: 8px;
+}
+.footer code { color: #cbd5e1; }
